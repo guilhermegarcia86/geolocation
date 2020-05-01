@@ -1,24 +1,21 @@
 package com.challenge.geolocation.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
-import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.bson.types.ObjectId;
 
 import lombok.Data;
 
 @Data
-@Document(collection = "estabelecimento")
-public class Estabelecimento {
-	
-	@Id
-	private String id;
+public class Estabelecimento{
+
+	private ObjectId id;
 
 	private String nome;
 	private String email;
-	private String endereco;
+	private Localizacao localizacao;	
 	
-    @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2D)
-    private Location location;
+	public Estabelecimento generateId() {
+		this.setId(new ObjectId());
+		return this;
+	}
 	
 }

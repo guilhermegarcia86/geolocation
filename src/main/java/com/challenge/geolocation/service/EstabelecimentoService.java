@@ -1,14 +1,16 @@
 package com.challenge.geolocation.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.geo.Point;
-import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.stereotype.Service;
 
+import com.challenge.geolocation.dto.EstabelecimentoDTO;
+import com.challenge.geolocation.filter.Filter;
 import com.challenge.geolocation.model.Estabelecimento;
 import com.challenge.geolocation.repository.EstabelecimentoRepository;
 import com.google.maps.GeoApiContext;
@@ -28,7 +30,7 @@ public class EstabelecimentoService {
 	@Value("${apikey}")
 	private String apikey;
 
-	public List<Estabelecimento> procuraEstabelecimentosProximoAMim(String endereco)
+	public List<EstabelecimentoDTO> procuraEstabelecimentosProximoAMim(String endereco, String distance, String limit)
 			throws ApiException, InterruptedException, IOException {
 
 		GeoApiContext context = new GeoApiContext.Builder().apiKey(apikey).build();
@@ -42,8 +44,15 @@ public class EstabelecimentoService {
 		Geometry geometry = resultado.geometry;
 
 		LatLng location = geometry.location;
+		
+		List<Estabelecimento> estabelecimentoList = repository.searchByGeolocation(
+				Filter.toFilter(location.lat, location.lng, Double.valueOf(distance), Integer.valueOf(limit)));
+		
+		List<EstabelecimentoDTO> dtoList = estabelecimentoList.stream().map(estabelecimento -> {
+			return EstabelecimentoDTO.toDTO(estabelecimento);
+		}).collect(Collectors.toList());
 
-		return repository.findByLocationWithin(new GeoJsonPoint(new Point(location.lat, location.lng)));
+		return dtoList;
 
 	}
 

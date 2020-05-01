@@ -1,0 +1,14 @@
+#mongodb
+host: localhost
+port: 27017
+database: challenge
+
+collection:
+  estabelecimento: estabelecimento
+
+#logging
+logging:
+  level:
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+
+apikey: <SUA CHAVE AQUI>

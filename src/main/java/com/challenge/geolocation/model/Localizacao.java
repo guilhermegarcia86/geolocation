@@ -5,10 +5,10 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class Location {
+public class Localizacao {
 	
-    private List<Double> location;
-    
+	private String endereco;
+    private List<Double> coordinates;    
     private String type = "Point";
 
 }
