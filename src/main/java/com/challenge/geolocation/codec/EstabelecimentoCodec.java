@@ -90,7 +90,7 @@ public class EstabelecimentoCodec implements CollectibleCodec<Estabelecimento>{
 	@Override
 	public BsonValue getDocumentId(Estabelecimento estabelecimento) {
 		if (!documentHasId(estabelecimento)) {
-			throw new IllegalStateException("This Document have not a id");
+			throw new IllegalStateException("This Document do not have a id");
 		}
 		
 		return new BsonString(estabelecimento.getId().toHexString());
