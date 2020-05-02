@@ -29,30 +29,32 @@ public class EstabelecimentoService {
 	@Value("${apikey}")
 	private String apikey;
 
-	public List<EstabelecimentoDTO> procuraEstabelecimentosProximoAMim(String endereco, String distance, String limit)
-			throws ApiException, InterruptedException, IOException {
+	public List<EstabelecimentoDTO> procuraEstabelecimentosProximoAMim(String endereco, String distance, String limit) {
 
 		GeoApiContext context = new GeoApiContext.Builder().apiKey(apikey).build();
 
 		GeocodingApiRequest request = GeocodingApi.newRequest(context).address(endereco);
 
-		GeocodingResult[] results = request.await();
+		try {
+			GeocodingResult[] results = request.await();
+			GeocodingResult resultado = results[0];
 
-		GeocodingResult resultado = results[0];
+			Geometry geometry = resultado.geometry;
 
-		Geometry geometry = resultado.geometry;
+			LatLng location = geometry.location;
 
-		LatLng location = geometry.location;
-		
-		List<Estabelecimento> estabelecimentoList = repository.searchByGeolocation(
-				Filter.toFilter(location.lat, location.lng, Double.valueOf(distance), Integer.valueOf(limit)));
-		
-		List<EstabelecimentoDTO> dtoList = estabelecimentoList.stream().map(estabelecimento -> {
-			return EstabelecimentoDTO.toDTO(estabelecimento);
-		}).collect(Collectors.toList());
+			List<Estabelecimento> estabelecimentoList = repository.searchByGeolocation(
+					Filter.toFilter(location.lat, location.lng, Double.valueOf(distance), Integer.valueOf(limit)));
 
-		return dtoList;
+			List<EstabelecimentoDTO> dtoList = estabelecimentoList.stream().map(estabelecimento -> {
+				return EstabelecimentoDTO.toDTO(estabelecimento);
+			}).collect(Collectors.toList());
 
+			return dtoList;
+		} catch (ApiException | InterruptedException | IOException e) {
+			e.printStackTrace();
+		}
+
+		return List.of();
 	}
-
 }
